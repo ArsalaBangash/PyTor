@@ -8,6 +8,9 @@ class Client:
         self.DHKE = DiffieHellman()
         self.DHKE.generate_public_key()  # automatically generates private key
 
+        # https://github.com/isislovecruft/leekspin
+        # We can add this to the nodes and Client, it's p. cool!
+
     def onReceiptOfCREATED(self, other_public_key):
         self.DHKE.generate_shared_secret(other_public_key, echo_return_key=True)
 
