@@ -10,7 +10,6 @@ if __name__ == "__main__":
     node3 = Node()
 
     # send a CREATE message from Client to Node 1
-    client.sendCreate()
+    client.sendMessage(node1)
 
-    # TODO make a listener for messages in Node and in Client?
 
