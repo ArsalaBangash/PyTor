@@ -1,48 +1,31 @@
 from diffiehellman.diffiehellman import DiffieHellman
 from pydispatch import dispatcher
 import rsa
+from utils import OP
+from utols import Packet
 
 
 class Node:
     DHKE = None
-    (pubkey, privkey) = (None, None)  #  RSA keys
+    (pubkey, privkey) = (None, None)  # RSA keys
 
-    def __init__(self):
-        self.DHKE = DiffieHellman()
-        self.DHKE.generate_public_key()  # automatically generates private key
-        (self.pubkey, self.privkey) = rsa.newkeys(512)
+    def __init__(self, id):
+        self.id = id
+        self.__dh = DiffieHellman()
+        self.__dh_sharedkey = None
+        (self.pubkey, self.__privkey) = rsa.newkeys(512)
+        dispatcher.connect(self.handle_create,
+                           signal=OP.CREATE, sender=dispatcher.Any)
 
-    def sendMessage(self, receiver):
-        msg = 'My message to the receiver'.encode('utf8')
+    def handle_create(self, packet):
+        if packet.decrypt_rsa():
+            self.__dh_sharedkey = self.__dh.generate_shared_secret(packet.payload[6:])
+    
 
-        # send message to specified node
-        # TODO this actually broadcasts the message. How to specifically send to one node?
-        dispatcher.sendExact(signal=msg, sender=self)
+    def send_created(self):
 
-    def handleIncomingMsg(self, sender, msg, op):
-        """Simple event handler"""
-        print ('Signal was sent by', sender)
-        dispatcher.connect(self.handleIncomingMsg, signal=msg, sender=dispatcher.Any)
 
-        # Pass the message on to the right handler
-        switch ={
-            op.CREATE: self.handleCREATE,
-            op.CREATED: self.handleCREATED
-        }
-        switch[op]
-
-    def handleCREATE(self, cipher, clientDHKE_halfkey):
-        msg = rsa.decrypt(cipher, self.privkey)
-        if msg is None: # TODO check if message is garbage ie not for us.
-            pass
-        # TODO send our part of the DHKE to the sender!
-        # self.DHKE.getPublicKey()?
-        self.DHKE.generate_shared_secret(clientDHKE_halfkey, echo_return_key=True)
-
-    def handleCREATED(self, other_public_key):
-        pass
-
-    def handleEXTEND(self):
-        pass
-    def handleEXTENDED(self):
-        pass
+    def send_message(self, receiver, op):
+        packet = self.send_ops[op](receiver)
+        dispatcher.send(signal=op, sender=self, packet)
+        

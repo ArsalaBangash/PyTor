@@ -1,13 +1,15 @@
 from Client import Client
 from Node import Node
 import time
+from utils import OP
+
 if __name__ == "__main__":
     #  Create the nodes that will be used in creating a circuit
     client = Client()
     #  In TOR, these nodes would be selected randomly from the Directory of nodes
-    node1 = Node()
-    node2 = Node()
-    node3 = Node()
+    node1 = Node("node_1")
+    node2 = Node("node_2")
+    node3 = Node("node_3")
     print("Created nodes to build the circuit (node1, node2, and node3).")
 
     print("Building the circuit:")
@@ -16,7 +18,7 @@ if __name__ == "__main__":
     # send a CREATE message from Client to Node 1. Node 1 decrypts it, and
     # sends Client back a CREATED message with its half of the DHKE. Client
     # creates the key and saves it.
-    client.send_CREATE(node1, msg=cl)
+    client.send_message(node1, op=OP.CREATE)
 
     # Extend the circuit to node 2. Node1 sends a create message to node2
     # with the encrypted first half of DHKE. node2 replies with a CREATED
