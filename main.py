@@ -1,5 +1,5 @@
-from client import Client
-from node import Node
+from Client import Client
+from Node import Node
 import time
 from utils import OP
 
@@ -10,8 +10,7 @@ if __name__ == "__main__":
     node1 = Node("node_1")
     node2 = Node("node_2")
     node3 = Node("node_3")
-    print("Created nodes to build the circuit (node1, node2, and node3).")
-
+    print("Created nodes to build the circuit: " + node1.id + ", " + node2.id + ", " + node3.id)
     print("Building the circuit:")
 
     # send a CREATE message from Client to Node 1. Node 1 decrypts it, and
