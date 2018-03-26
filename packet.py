@@ -1,5 +1,6 @@
 import rsa
-
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
 
 class Packet:
     def __init__(self, src_id, op, dest, payload):
@@ -22,6 +23,13 @@ class Packet:
         self.__payload = self.__payload.decode('utf-8')
         self.decrypt_packet()
         return True
+
+    def decrypt_aes(self, aeskey):
+        backend = default_backend()
+        cipher = Cipher(algorithms.AES(aeskey), modes.ECB(), backend=backend)
+        decryptor = cipher.decryptor()
+        self.msg = (decryptor.update(self.msg) + decryptor.finalize()).decode("utf-8")
+        return self.msg
 
     def decrypt_packet(self):
         self.payload = self.__payload
