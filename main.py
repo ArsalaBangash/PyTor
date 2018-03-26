@@ -1,5 +1,5 @@
-from client import Client
-from node import Node
+from Client import Client
+from Node import Node
 import time
 from utils import OP
 
@@ -26,9 +26,12 @@ if __name__ == "__main__":
 
     # # TODO try to view DHKE2 from node1 (should fail cuz no private key)
     # time.sleep(5)
-    # client.send_EXTEND(node2, msg=client.DHKE3.public_key, create=node3)
+    #client.send_EXTEND(node2, msg=client.DHKE3.public_key, create=node3)
+    #client.send_message(node1, op=OP.EXTEND) #Possible issue with extend not forwarding everything to the next node, but node1 everytime.
 
     # # Circuit complete. Now it's time to relay messages through.
     # client.relay("Wooo - no one knows who sent this msg!")
     # # TODO try to determine who client is from node3 (should fail as only node1
     # # knows who the client is)
+
+    ##
