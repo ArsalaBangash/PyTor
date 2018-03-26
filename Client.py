@@ -2,6 +2,7 @@ from pydispatch import dispatcher
 from utils import OP
 from packet import Packet
 import rsa
+import hashlib
 from diffiehellman.diffiehellman import DiffieHellman
 
 
@@ -14,11 +15,16 @@ class Client:
         # automatically generates private key
         self.dhke.generate_public_key()
         self.dh_pub = str(self.dhke.public_key).encode('utf8')
+        self.__dh_sharedkey = None
+
         print(self.dhke.public_key)
         self.send_ops = {
             OP.CREATE: self.get_create_message
         }
-        dispatcher.connect(self.handle_create, signal=OP.CREATE,
+        # Set once we establish a connect to an entry node
+        self.entry_node = None
+        # the client is listening to any CREATED messages
+        dispatcher.connect(self.handle_created, signal=OP.CREATED,
                            sender=dispatcher.Any)
 
     def get_create_message(self, receiver):
@@ -31,5 +37,13 @@ class Client:
         packet = self.send_ops[op](receiver)
         dispatcher.send(signal=op, sender=self, packet=packet)
 
-    def handle_create(sender, packet):
-        pass
+    def handle_created(self, packet):
+        (other_key, keyHash) = packet.msg
+        # Generate the shared key
+        shared = self.dhke.generate_shared_secret(other_key)
+        mykeyHash =  hashlib.sha1(str(self.__dh_sharedkey).encode("utf-8")).hexdigest()
+
+        if mykeyHash == keyHash:  # Only go through if hash mataches
+            self.__dh_sharedkey = shared
+            self.entry_node = packet.src
+            print("Client's entry node is now set to: ", self.entry_node)

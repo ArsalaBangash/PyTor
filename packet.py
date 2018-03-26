@@ -15,10 +15,10 @@ class Packet:
         self.dest = dest
         self.payload = None
         self.__payload = payload[1]
-        self.enc_msg = payload[0]
+        self.msg = payload[0]
 
     def decrypt_rsa(self, prikey):
-        self.__payload = rsa.decrypt(self.enc_msg, prikey)
+        self.__payload = rsa.decrypt(self.msg, prikey)
         self.__payload = self.__payload.decode('utf-8')
         self.decrypt_packet()
         return True
