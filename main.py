@@ -1,5 +1,5 @@
-from Client import Client
-from Node import Node
+from client import Client
+from node import Node
 import time
 from utils import OP
 
