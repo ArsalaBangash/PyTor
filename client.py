@@ -57,13 +57,13 @@ class Client:
 
         if mykeyHash == keyHash:  # Only go through if hash matches
             self.__dh_sharedkey = shared
-            print(shared)
             self.aes_keys[packet.src] = shared
             self.entry_node = packet.src
             print("Client's entry node is now set to: ", self.entry_node)
 
     def handle_extended(self, packet):
-        (other_key, keyHash) = packet.msg
+        print ("Received extended")
+        ##(other_key, keyHash) = packet.msg
 
     # Extend always gets wrapped with everything in the the AES Keys list
     def get_extend_packet(self, receivers):
@@ -74,15 +74,17 @@ class Client:
 
         def recursive_extend(recs, node_index):
             if node_index == len(recs) - 1:
-                return self.get_create_packet(recs)
+                create_packet = self.get_create_packet(recs[node_index:])
+                create_packet.src = recs[node_index - 1]
+                return create_packet
             return Packet(src_id="client", op=OP.EXTEND, dest=recs[0],
-                          payload=(msg, recursive_extend(recs, node_index + 1)))
+                          payload=(extend_messages[recs[node_index]], recursive_extend(recs, node_index + 1)))
 
         packet = recursive_extend(receivers, 0)
         return packet
 
     # Encrypts the msg
     def aes_encrypt(self, msg, key):
-        obj = AES.new(key[0:32], AES.MODE_CBC, os.urandom(16))
+        obj = AES.new(key[0:32], AES.MODE_CBC, 'This is an IV456')
         enc_msg = obj.encrypt(msg)
         return enc_msg
