@@ -11,7 +11,8 @@ Clone this repo
 Before getting started, you need to install the following python packages. Make sure you're on python3. 
 
 ```
-pip3 install diffiehellman
 pip3 install rsa
-pip3 install cryptography
+pip3 install pyCrypto
+pip3 uninstall Cryptography
+pip3 install PyDispatcher
 ```
