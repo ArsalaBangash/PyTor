@@ -3,7 +3,6 @@ from Crypto.Cipher import AES
 import os
 
 
-
 class Packet:
     def __init__(self, src_id, op, dest, payload):
         """
@@ -31,7 +30,7 @@ class Packet:
         decrypted_msg = aes_obj.decrypt(self.msg.strip())
         if decrypted_msg == self.msg:
             return False
-        self.msg = decrypted_msg
+        self.msg = decrypted_msg.decode('utf-8')
         self.decrypt_packet()
         return True
 

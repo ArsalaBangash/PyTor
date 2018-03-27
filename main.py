@@ -9,12 +9,12 @@ if __name__ == "__main__":
     node2 = Node("node_2")
     node3 = Node("node_3")
 
-    node_table = {"node_1": node1, "node_2": node2, "node_3": node3}
+    node_table = {"node_1": node1, "node_2": node2}
     # Create the nodes that will be used in creating a circuit
     client = Client(node_table)
 
     print("Created nodes to build the circuit: " +
-          node1.id + ", " + node2.id + ", " + node3.id)
+          node1.id + ", " + node2.id)
     print("Building the circuit:")
 
     # send a CREATE message from Client to Node 1. Node 1 decrypts it, and
