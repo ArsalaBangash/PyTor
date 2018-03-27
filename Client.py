@@ -72,13 +72,13 @@ class Client:
         for j in range(len(receivers) - 1):
             extend_messages[receivers[j]] = self.aes_encrypt(msg, self.aes_keys[receivers[j]])
 
-        def recursive_extend(recs):
-            if len(recs) == 1:
+        def recursive_extend(recs, node_index):
+            if node_index == len(recs) - 1:
                 return self.get_create_packet(recs)
             return Packet(src_id="client", op=OP.EXTEND, dest=recs[0],
-                          payload=(msg, recursive_extend(recs[1:])))
+                          payload=(msg, recursive_extend(recs, node_index + 1)))
 
-        packet = recursive_extend(receivers)
+        packet = recursive_extend(receivers, 0)
         return packet
 
     # Encrypts the msg
