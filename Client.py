@@ -26,11 +26,14 @@ class Client:
         # the client is listening to any CREATED messages
         dispatcher.connect(self.handle_created, signal=OP.CREATED,
                            sender=dispatcher.Any)
+        dispatcher.connect(self.handle_extended, signal=OP.EXTENDED,
+                           sender=dispatcher.Any)
 
     def get_create_message(self, receiver):
         msg = self.dh_pub
         enc_msg = rsa.encrypt(msg, receiver.pubkey)
-        packet = Packet(src_id="client", op=OP.CREATE, dest=receiver.id, payload=(enc_msg, None))
+        packet = Packet(src_id="client", op=OP.CREATE,
+                        dest=receiver.id, payload=(enc_msg, None))
         return packet
 
     def send_message(self, receiver, op):
@@ -41,9 +44,17 @@ class Client:
         (other_key, keyHash) = packet.msg
         # Generate the shared key
         shared = self.dhke.generate_shared_secret(other_key)
-        mykeyHash =  hashlib.sha1(str(self.__dh_sharedkey).encode("utf-8")).hexdigest()
+        mykeyHash = hashlib.sha1(
+            str(self.__dh_sharedkey).encode("utf-8")).hexdigest()
 
         if mykeyHash == keyHash:  # Only go through if hash mataches
             self.__dh_sharedkey = shared
             self.entry_node = packet.src
             print("Client's entry node is now set to: ", self.entry_node)
+
+    def handle_extended(self, packet):
+        # TODO:
+        (other_key, keyHash) = packet.msg
+
+        pass
+
